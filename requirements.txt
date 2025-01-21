@@ -1,1 +1,4 @@
 # Contains all libraries that are needed for this project
+
+# web scrapping libraries
+selenium
