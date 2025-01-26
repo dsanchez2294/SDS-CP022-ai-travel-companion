@@ -1,4 +1,5 @@
 # Contains all libraries that are needed for this project
-
+langchain
+tavily-python
+load_dotenv
 # web scrapping libraries
-selenium
