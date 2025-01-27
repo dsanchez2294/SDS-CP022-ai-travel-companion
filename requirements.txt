@@ -1,10 +1,10 @@
 # Contains all libraries that are needed for this project
 
-# web scrapping libraries
-selenium
-
 # search api
 tavily-python
 
 # to load env files
 python-dotenv
+
+# langchain libraries
+langchain
