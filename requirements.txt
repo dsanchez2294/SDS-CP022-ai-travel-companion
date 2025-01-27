@@ -2,4 +2,8 @@
 langchain
 tavily-python
 load_dotenv
+graphviz
+pygraphviz
+pip install --upgrade pip setuptools wheel
+
 # web scrapping libraries
