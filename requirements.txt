@@ -2,3 +2,9 @@
 
 # web scrapping libraries
 selenium
+
+# search api
+tavily-python
+
+# to load env files
+python-dotenv
