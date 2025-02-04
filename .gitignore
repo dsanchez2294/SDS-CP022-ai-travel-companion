@@ -3,3 +3,7 @@
 .DS_Store
 .env
 .venv
+.txt
+notebooks/rajan-hans/scratchpad/
+notebooks/rajan-hans/.streamlit
+__pycache__
