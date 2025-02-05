@@ -6,7 +6,6 @@ load_dotenv
 graphviz
 pygraphviz
 
-
 # web scrapping libraries
 selenium
 
@@ -19,4 +18,4 @@ openai
 langchain_community
 wikipedia
 requests
-graphviz
+

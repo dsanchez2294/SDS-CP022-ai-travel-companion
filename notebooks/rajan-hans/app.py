@@ -2,7 +2,7 @@ import streamlit as st
 import re
 from web_scraper import WebScraper
 from travel_agent import TravelAgent
-
+import os
 # --- Sidebar Authentication ---
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
@@ -22,6 +22,8 @@ if not st.session_state.authenticated:
             if username == DEFAULT_USERNAME and password == DEFAULT_PASSWORD:
                 st.session_state.authenticated = True
                 st.sidebar.success("Logged in successfully!")
+                openai_api_key = os.getenv('OPENAI_API_KEY')
+                tavily_key = os.getenv("TAVILY_API_KEY")
             else:
                 st.sidebar.error("Invalid username or password.")
     else:  # API Keys option
@@ -138,7 +140,7 @@ if not st.session_state.quit_app:
                     query += "Do not include any airline ticket pricing information. "
 
                 try:
-                    agent = TravelAgent()
+                    agent = TravelAgent(openai_api_key, tavily_api_key)
                     st.write("Invoking agent ...")
                     response = agent.run_query(query)
                     st.subheader("Agent Response")

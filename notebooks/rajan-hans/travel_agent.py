@@ -8,15 +8,15 @@ from langchain_community.chat_models import ChatOpenAI
 from tavily import TavilyClient
 import streamlit as st
 
-class TravelAgent:
-    def __init__(self):
+class TravelAgent():
+    def __init__(self, openai_key, tavily_key):
         """
         Initialize the TravelAgent by loading API keys, setting up the chat model,
         and initializing the agent with its tools.
         """
-        load_dotenv()
-        self.openai_api_key = os.getenv('OPENAI_API_KEY')
-        self.tavily_key = os.getenv("TAVILY_API_KEY")
+        
+        self.openai_api_key = openai_key
+        self.tavily_key = tavily_key
         
         if not self.tavily_key:
             st.error("Tavily API key not found. Please set it in your environment or .env file.")
