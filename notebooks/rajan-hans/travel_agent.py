@@ -17,7 +17,9 @@ class TravelAgent():
         
         self.openai_api_key = openai_key
         self.tavily_key = tavily_key
-        
+        #print(f"OpenAI API key: {self.openai_api_key}")
+        #print(f"Tavily API key: {self.tavily_key}")
+
         if not self.tavily_key:
             st.error("Tavily API key not found. Please set it in your environment or .env file.")
             raise ValueError("Missing Tavily API key")

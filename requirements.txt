@@ -3,8 +3,7 @@
 # search api
 tavily-python
 load_dotenv
-graphviz
-pygraphviz
+
 
 # web scrapping libraries
 selenium
@@ -13,7 +12,6 @@ selenium
 python-dotenv
 
 # langchain libraries
-langchain
 openai
 langchain_community
 wikipedia

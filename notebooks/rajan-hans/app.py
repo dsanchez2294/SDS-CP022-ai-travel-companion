@@ -3,10 +3,13 @@ import re
 from web_scraper import WebScraper
 from travel_agent import TravelAgent
 import os
+from dotenv import load_dotenv
+import os
+
 # --- Sidebar Authentication ---
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
-
+    load_dotenv()
 st.sidebar.header("Authentication")
 
 if not st.session_state.authenticated:
@@ -21,9 +24,19 @@ if not st.session_state.authenticated:
             # Replace these with your actual authentication logic.
             if username == DEFAULT_USERNAME and password == DEFAULT_PASSWORD:
                 st.session_state.authenticated = True
-                st.sidebar.success("Logged in successfully!")
+                #st.sidebar.success("Logged in successfully!") 
                 openai_api_key = os.getenv('OPENAI_API_KEY')
-                tavily_key = os.getenv("TAVILY_API_KEY")
+                if (openai_api_key):
+                    #st.sidebar.success(f"OpenAI API key: {openai_api_key}")
+                    st.session_state.openai_api_key = openai_api_key
+                else:
+                    st.sidebar.error("OpenAI API key not found. Please set it in your environment or .env file.")
+                tavily_api_key = os.getenv("TAVILY_API_KEY")
+                if (tavily_api_key ):
+                    #st.sidebar.success(f"Tavily API key: {tavily_api_key}")
+                    st.session_state.tavily_api_key = tavily_api_key
+                else:
+                    st.sidebar.error("Tavily API key not found. Please set it in your environment or .env file.")
             else:
                 st.sidebar.error("Invalid username or password.")
     else:  # API Keys option
@@ -140,7 +153,7 @@ if not st.session_state.quit_app:
                     query += "Do not include any airline ticket pricing information. "
 
                 try:
-                    agent = TravelAgent(openai_api_key, tavily_api_key)
+                    agent = TravelAgent(st.session_state.openai_api_key, st.session_state.tavily_api_key)
                     st.write("Invoking agent ...")
                     response = agent.run_query(query)
                     st.subheader("Agent Response")
