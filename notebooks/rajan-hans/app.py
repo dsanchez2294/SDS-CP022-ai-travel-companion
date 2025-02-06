@@ -54,7 +54,10 @@ if not st.session_state.authenticated:
     # Stop the app from continuing until authentication is completed.
     if not st.session_state.authenticated:
         st.stop()
-
+else:
+    # Once authenticated, display a confirmation message in the sidebar.
+    st.sidebar.write("✅ You have been successfully logged in!")
+    
 # --- Main App ---
 st.title("Top Destinations for Travel")
 
