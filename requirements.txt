@@ -4,16 +4,21 @@
 tavily-python
 load_dotenv
 
-
 # web scrapping libraries
 selenium
+requests
+
+# plotting libraries
+graphviz
+pygraphviz
+
+# LLM apis
+openai
 
 # to load env files
 python-dotenv
 
 # langchain libraries
-openai
+langchain
 langchain_community
 wikipedia
-requests
-
