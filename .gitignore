@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Include any files you want to ignore (do not want to push to GitHub)
 .ipynb_checkpoints
 .DS_Store
@@ -8,3 +9,6 @@ notebooks/rajan-hans/throw-away-code/
 notebooks/rajan-hans/.streamlit
 __pycache__
 test.py
+=======
+cred.env
+>>>>>>> cf26d92 (Add cred.env to .gitignore)
