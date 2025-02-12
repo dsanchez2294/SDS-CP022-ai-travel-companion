@@ -37,30 +37,31 @@ class PlannerAgent:
     Observation will be the result of running those actions.
 
     Your available actions are:
-    
-    web_search:
-    e.g. Round trip flights from Abu Dhabi to Tokyo from 1st of March to 23rd of March
-    Runs a web search using Tavily to extract details of the latest flight details including ticket prices and timings
 
-    The same action can also be used to grab the best hotel deals for the destination
+    ticket_search:
+
+    User: I want to plan a trip from Abu Dhabi to Japan starting from 1st of March to 23rd of March.
+    Thought 
     
+    User: I want to plan a trip from Abu Dhabi to Japan starting from 1st of March to 23rd of March.
+    Thought: The top cities to visit in Japan are Tokyo, Kyoto and Osaka.
+    Thought: I should use ticket_search look up the flight ticket prices and days from Abu Dhabi to Tokyo from
+    the 1st of March to the 23rd of March.
+    Action: ticket_search: Flight ticket prices from Abu Dhabi to Tokyo from the 1st of Mar to 23rd of March. Generate 3 options for nearby dates and mention the price.
+    Attach the link for each option as well. If you do not find any options, mention that.        
+
+    PAUSE
+
+
+
+    web_search:
+
     e.g. Best hotel deals for Tokyo from 1st of March to 23rd of March
     Runs a web search using Tavily to extract details of the best hotel deals for the destination including prices and ratings
 
     Example Session:
 
-    User: I want to plan a trip from Abu Dhabi to Japan starting from 1st of March to 23rd of March.
-    Thought: The top cities to visit in Japan are Tokyo, Kyoto and Osaka.
-    Thought: I should use web_search look up the flight ticket prices and days from Abu Dhabi to Tokyo from
-    the 1st of March to the 23rd of March.
-    Action: web_search: Flight ticket prices from Abu Dhabi to Tokyo from the 1st of Mar to 23rd of March.
-    PAUSE
-
-    You will be called again with this:
     
-    Observation: The best tickets for flights from Abu Dhabi to Tokyo can be found on expedia.com for the price of 2,500 AED for
-    economy tickets.
-
     Thought: I should use web_search look up the best hotel deals for Tokyo from the 1st of March to the 23rd of March.
 
     Action: web_search: Best hotel deals for Tokyo from 1st of March to 23rd of March
