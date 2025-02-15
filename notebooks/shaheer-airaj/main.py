@@ -2,6 +2,7 @@ from planner_agent import PlannerAgent
 from summarizer_agent import SummarizerAgent
 from tools import SearchWeb
 import re
+import gradio as gr
 
 known_actions = {
     "web_search": SearchWeb
@@ -14,10 +15,12 @@ def grab_actions(response):
     if match:
         tool = match.group(2)
         details = match.group(3)
+        print("\nTool and details extracted from response:\n")
+        print(f"\nTool: {tool}, Details: {details}\n")
 
     return tool, details
 
-def query(max_turns=6):
+def query(origin, destination, start_month, start_day, end_month, end_day, max_turns=6):
     
     # Initialize agents and tools
     planner = PlannerAgent()
@@ -28,20 +31,6 @@ def query(max_turns=6):
     I want you to build an itinerary for me for a trip from {origin} to {destination} starting 
     from {start_month} {start_day} to {end_month} {end_day}.
     """
-
-    # origin = input("Enter where you are travelling from: ")
-    # destination = input("Enter your destination: ")
-    # start_month = input("Enter the month you would like to depart for your trip: ")
-    # start_day = input("Enter the day you would like to depart for your trip: ")
-    # end_month = input("Enter the month you would like to return: ")
-    # end_day = input("Enter the day you would like to return: ")
-
-    origin = 'abu dhabi'
-    destination = 'japan'
-    start_month = 'march'
-    start_day = '1'
-    end_month = 'march'
-    end_day = '23'
 
     # Run the planner agent
     prompt = prompt_template.format(
@@ -56,22 +45,39 @@ def query(max_turns=6):
     next_prompt = prompt
     while i < max_turns:
         response = planner.plan(next_prompt)
-        tool, details = grab_actions(response)
         next_prompt = response
         i += 1
-        if tool:
+        if "Action" in next_prompt:
+            tool, details = grab_actions(response)
             if tool not in known_actions:
                 print(f"Unknown tool: {tool}")
                 break
-            print("--- running {} {} ---".format(tool, details))
+            print("\n--- running {} {} ---\n".format(tool, details))
             action = known_actions[tool]()
             search_resp = action.search(details)
-            print("--- summarizing results ---")
+            print("\n--- summarizing results ---\n")
             summary = summarizer.summarize(search_resp)
             # print("--- Observation: {} ---".format(summary))
             next_prompt = f"Observation: {summary}"
         else:
-            return response
-        
+            return response.strip("Answer:")
+
+def main():
+    iface = gr.Interface(
+        fn=query,
+        inputs=[
+            gr.Textbox(label="Origin"),
+            gr.Textbox(label="Destination"),
+            gr.Textbox(label="Start Month"),
+            gr.Textbox(label="Start Day"),
+            gr.Textbox(label="End Month"),
+            gr.Textbox(label="End Day")
+        ],
+        outputs="markdown",
+        title="AI Travel Companion",
+        description="Enter your travel details to get a personalized itinerary."
+    )
+    iface.launch()
+
 if __name__ == "__main__":
-    query()
+    main()
