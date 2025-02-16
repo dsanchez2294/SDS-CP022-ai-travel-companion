@@ -3,6 +3,7 @@ import logging
 from openai import OpenAI
 from dotenv import load_dotenv
 load_dotenv("cred.env")
+import json
 
 logging.basicConfig(
     level=logging.INFO,
@@ -36,6 +37,12 @@ class SummarizerAgent:
 
     And you can summarize accordingly:
     The average cost of a lodging in Tokyo is $203 per night at the Bulgari Hotel Tokyo which is located in Tokyo and is a 3-minute walk from Central Tokyo.
+
+    If you find explicit ticket data regarding price, and link to pruchase options, do not summarize and show them as a table. 
+
+
+
+    
     """.strip()
 
     def __init__(self, model="gpt-4o-mini", developer=summarizer_agent_prompt):
@@ -48,6 +55,11 @@ class SummarizerAgent:
             self.messages.append({"role":"developer","content":self.developer})
 
     def summarize(self, prompt, max_tokens=2000):
+        # Ensure prompt is a string
+        if not isinstance(prompt, str):
+            
+            prompt = json.dumps(prompt, indent=2)
+
         messages = self.messages + [{"role": "user", "content": prompt}]
         response = self.client.chat.completions.create(
             model=self.model,
