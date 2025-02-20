@@ -1,10 +1,9 @@
-import os
+
 import logging
 import wikipedia
-from dotenv import load_dotenv
 from tavily import TavilyClient
 
-load_dotenv()
+
 
 
 logging.basicConfig(

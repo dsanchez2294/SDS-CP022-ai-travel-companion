@@ -20,10 +20,19 @@ def login():
 
             #
             if username == secret_username and password == secret_password:
-                st.success("Login successful!")
+                st.success("Login successful!---11")
                 # Extract API keys from secrets and store in session_state
-                st.session_state["OPENAI_API_KEY"] = st.secrets.get("OPENAI_API_KEY")
-                st.session_state["TAVILY_API_KEY"] = st.secrets.get("TAVILY_API_KEY")
+                openai_key = st.secrets.get("OPENAI_API_KEY")
+                tavily_key = st.secrets.get("TAVILY_API_KEY")
+
+                if not openai_key or not tavily_key:
+                    st.error("API keys missing in secrets file.")
+                    return
+                
+                st.session_state["OPENAI_API_KEY"] = openai_key 
+                st.session_state["TAVILY_API_KEY"] = tavily_key
+                # st.write(st.session_state["OPENAI_API_KEY"])
+                # st.write(st.session_state["TAVILY_API_KEY"])
                 st.session_state["logged_in"] = True
                 st.rerun(scope="app")
             else:
@@ -36,7 +45,7 @@ def login():
         
         if st.button("Login", key="login_api"):
             if openai_key and tavily_key:
-                st.success("Login successful!")
+                st.success("Login successful!--22")
                 st.session_state["OPENAI_API_KEY"] = openai_key
                 st.session_state["TAVILY_API_KEY"] = tavily_key
                 st.session_state["logged_in"] = True
@@ -46,11 +55,13 @@ def login():
 
 def main():
     st.title("Rajan's AI Travel Itinerary Planner ")
-    st.write("Login Successful!")  # Debug message
-
+    # st.write("Login Successful!--33")  # Debug message
+    # st.write(st.session_state["OPENAI_API_KEY"])
+    # st.write(st.session_state["TAVILY_API_KEY"])
+    # st.write(st.session_state["logged_in"])   
     # Input fields for itinerary details.
     origin = st.text_input("Origin", value="Los Angeles")
-    destination = st.text_input("Destination")
+    destination = st.text_input("Destination", value="Switzerland")
     
     # Calendar controls for travel dates.
     start_date = st.date_input("Travel Start Date", value=date.today() + timedelta(days=10))
@@ -65,6 +76,8 @@ def main():
         else:
             with st.spinner("Generating itinerary..."):
                 try:
+                    # st.write("passing in OAIK -", st.session_state["OPENAI_API_KEY"])
+                    # st.write("passing in TAVK -",st.session_state["TAVILY_API_KEY"])    
                     planner = TravelPlanner(st.session_state["OPENAI_API_KEY"], st.session_state["TAVILY_API_KEY"])
                     itinerary = planner.plan_itinerary(origin, destination, start_date, end_date)
                     st.markdown("### Generated Itinerary")

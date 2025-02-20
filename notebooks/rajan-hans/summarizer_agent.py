@@ -1,8 +1,7 @@
-import os
 import logging
 from openai import OpenAI
-from dotenv import load_dotenv
-load_dotenv()
+
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -41,6 +40,7 @@ class SummarizerAgent():
     """.strip()
 
     def __init__(self, openai_api_key, tavily_api_key,  model="gpt-4o-mini", developer=summarizer_agent_prompt):
+        print("\n****************") 
         logging.info("Summarizer agent is initializing...")
         self.openai_api_key = openai_api_key
         self.tavily_api_key = tavily_api_key
@@ -48,6 +48,8 @@ class SummarizerAgent():
         self.developer = developer
         self.client = OpenAI(api_key=self.openai_api_key)
         self.messages = []
+        print("Summarizer agent message- ", self.messages) 
+       
         if self.developer:
             self.messages.append({"role": "developer", "content": self.developer})
 
@@ -59,5 +61,5 @@ class SummarizerAgent():
             messages=messages
         )
         self.messages.append({"role": "assistant", "content": response.choices[0].message.content})
-        print("\nResponse of chat: \n", response.choices[0].message.content)
+        print("\nResponse of summarizer chat: \n", response.choices[0].message.content)
         return response.choices[0].message.content
