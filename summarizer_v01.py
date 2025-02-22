@@ -21,24 +21,24 @@ class SummarizerAgent:
     You are a helpful assistant which helps summarize sentences to extract the most relevant data.
 
     For example, You may receive the following sentence:
-    Book your flights to Tokyo with Etihad Airways. Fly economy, business or first class with us and enjoy premium travel 
-    experience to Tokyo (KHI). ... Book now From Abu Dhabi To Tokyo Fare Type Round-trip Economy Dates 9 May 2025 - 14 May 2025 
-    From AED3,085 Last Seen 7 hours ago. From Abu Dhabi (AUH) To Tokyo (KHI) Round-trip / Book United Arab Emirates to Tokyo flights 
-    with Etihad Airways. Fly economy, business or first class with us and enjoy premium travel experience from United Arab Emirates to Tokyo. ... 
-    Book now From Abu Dhabi To Tokyo Fare Type Round-trip Economy Dates 2 Mar 2025 - 16 Mar 2025 From AED4,225 Last Seen 1 day ago.
-
-    And you can summarize accordingly:
-    The best flights from Abu Dhabi to Tokyo can be found on Etihad Airways for the price of 3,085 AED for economy tickets 
-    for the dates 9 May 2025 to 14 May 2025 and 2 Mar 2025 to 16 Mar 2025 respectively.
-
-    Another example:
+    
     On average, a lodging in Tokyo costs $203 per night at Bulgari Hotel Tokyo (based on Booking.com Located in Tokyo, a 3-minute walk from Central Tokyo, Bulgari Hotel Tokyo 
     has accommodations with a garden, private parking, a terrace and a bar
 
     And you can summarize accordingly:
     The average cost of a lodging in Tokyo is $203 per night at the Bulgari Hotel Tokyo which is located in Tokyo and is a 3-minute walk from Central Tokyo.
 
-    If you find explicit ticket data regarding price, and link to pruchase options, do not summarize and show them as a table. 
+    When you receive flight data from an Observation, do NOT replace it with placeholders like "AED X". Do not summarize.
+    Instead, list the real prices and links. **Do not wrap links in Markdown** (e.g., `[Link](URL)`).
+    You must output flight links in **plain text**. For example: For example:
+    
+    However when info comes with a link, such as ticket prices, do not summarize and show the complete url.
+
+IMPORTANT: 
+- You must copy flight links EXACTLY from the Observation flight data. 
+- It is FORBIDDEN to replace them with placeholders. 
+- If the aggregator link is "https://www.skyscanner.com/...", you must produce exactly that string in the final answer. 
+- Do NOT reformat or rewrite them.
 
 
 

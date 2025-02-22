@@ -50,7 +50,11 @@ class PlannerAgent:
     Thought: The top cities to visit in Japan are Tokyo, Kyoto and Osaka.
     Thought: I should use ticket_search look up the flight ticket prices and days from Abu Dhabi to Tokyo from
     the 1st of March to the 23rd of March.
-    Action: ticket_search: Flight ticket prices from Abu Dhabi to Tokyo from the 1st of Mar to 23rd of March. Generate 3 options for nearby dates and mention the price.
+    Action: ticket_search: 
+    
+    I want you to search only within the info provided by TicketSearch in tools_v01.
+    
+    Flight ticket prices from Abu Dhabi to Tokyo from the 1st of Mar to 23rd of March. Generate 3 options for nearby dates and mention the price.
     Attach the link for each option as well. If you do not find any options, mention that. 
     When you receive flight data from an Observation, do NOT replace it with placeholders like "AED X".
     Instead, list the real prices and links. **Do not wrap links in Markdown** (e.g., `[Link](URL)`).
@@ -61,9 +65,19 @@ class PlannerAgent:
     ITINERARY:
     ...
     Flight Options:
-    1) Price: 2750 USD, Link: https://example.com/flight1
-    2) Price: 2850 AED, Link: https://example.com/flight2
-    3) Price: 3000 AED, Link: https://example.com/flight3
+    1) Price: 2750 USD, Link: https://www.skyscanner.com/routes/cl/br/chile-to-brazil.html
+    2) Price: 2850 AED, Link: https://www.skyscanner.com.au/routes/cl/br/chile-to-brazil.html
+    3) Price: 3000 AED, Link: https://www.latam.com/en-us/flights
+
+
+
+IMPORTANT: 
+- You must copy flight links EXACTLY from the Observation flight data. 
+- It is FORBIDDEN to replace them with placeholders. 
+- If the aggregator link is "https://www.skyscanner.com/...", you must produce exactly that string in the final answer. 
+- Do NOT reformat or rewrite them.
+
+
 
     If there are more than three flight options, you may choose any three that best match the request (e.g. cheapest or different dates).
     PAUSE
@@ -166,6 +180,40 @@ class PlannerAgent:
     - Morning: Visit Universal Studios Japan (optional) or explore Kuromon Ichiba Market.  
     - Afternoon: Last-minute shopping in Umeda or Namba.  
     - Evening: Return home.  
+
+PAUSE
+
+tour_search:
+
+User:I want to VVisit Universal Studios Japan (optional) or explore Kuromon Ichiba Market.  
+    Thought 
+    
+    User: I want to visit Universal Studios Japan or explore Kuromon Ichiba Market.  
+    Thought: I should use tour_search look up the for tours to visit Universal Studios Japan
+    Action: tour_search: 
+    
+    I want you to search only within the info provided by TourSearch in tools_v01.
+    
+    Ticket prices and links for tours to visit Universal Studios Japan.
+
+    
+    1) Universal studios Japan, Price: 54.99 USD, Link: https://www.osaka-tickets.com/universal-studios-japan/?ci=1&cm=20886874052__c_x___&gad_source=1&gclid=CjwKCAiAiOa9BhBqEiwABCdG88Yrmv2jFxcRtfsVrexf4Vn9OHBmueBOaMSInGhepd5TeNHFCEtIgBoCbPsQAvD_BwE
+    2) Kuromon Ichiba Market: $47.06, Link: https://www.osaka-tickets.com/universal-studios-japan/?ci=1&cm=20886874052__c_x___&gad_source=1&gclid=CjwKCAiAiOa9BhBqEiwABCdG88Yrmv2jFxcRtfsVrexf4Vn9OHBmueBOaMSInGhepd5TeNHFCEtIgBoCbPsQAvD_BwE
+
+
+
+IMPORTANT: 
+- You must copy flight links EXACTLY from the TourSearch 
+- It is FORBIDDEN to replace them with placeholders. 
+- If the aggregator link is "https://www.skyscanner.com/...", you must produce exactly that string in the final answer. 
+- Do NOT reformat or rewrite them.
+
+
+
+    If there are more than three flight options, you may choose any three that best match the request (e.g. cheapest or different dates).
+    PAUSE
+
+
 
     ### **Additional Notes:**  
     - Local Transportation: JR Pass recommended for intercity travel.  

@@ -1,3 +1,5 @@
+# check_ticket_search.py
+
 import os
 import logging
 from dotenv import load_dotenv
@@ -13,7 +15,7 @@ if not TAVILY_API_KEY:
     raise ValueError("TAVILY_API_KEY not found.")
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,  # Set to DEBUG so you can see the logs
     format="%(asctime)s - %(levelname)s - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S"
 )
@@ -21,6 +23,7 @@ logging.basicConfig(
 class TicketSearchTwoStep:
     
     def __init__(self):
+        logging.debug("Initializing TicketSearchTwoStep with TAVILY_API_KEY: %s", TAVILY_API_KEY)
         self.client = TavilyClient(TAVILY_API_KEY)
 
     def date_range(self, start_date, end_date):
@@ -33,11 +36,6 @@ class TicketSearchTwoStep:
             current += delta
 
     def fetch_aggregator_data(self, origin, destination, start_date, end_date):
-        """
-        STEP 1:
-        Fetch aggregator text data from Tavily's 'results' field.
-        Return a list of entries, each with "date" + aggregator "results".
-        """
         all_data = []
         for date in self.date_range(start_date, end_date):
             search_input = (
@@ -46,10 +44,13 @@ class TicketSearchTwoStep:
             )
             logging.info(f"Fetching aggregator data for {date}: '{search_input}'")
             response = self.client.search(search_input)
-            
+
+            aggregator_items = response.get("results", [])
+            logging.debug("[DEBUG fetch_aggregator_data] For date=%s, aggregator items found: %d", date, len(aggregator_items))
+
             data_for_date = {
                 "date": date,
-                "results": response.get("results", [])  # aggregator items
+                "results": aggregator_items
             }
             all_data.append(data_for_date)
         
@@ -58,51 +59,85 @@ class TicketSearchTwoStep:
     def parse_aggregator_data(self, aggregator_data):
         """
         STEP 2:
-        Take aggregator info from 'fetch_aggregator_data' and do your best
-        to parse out flight info, including the link (URL), airline, price, etc.
+        1) We match either "USD" or "$" + numeric,
+        2) Then check the snippet around that match to skip if it's not referencing an actual flight/fare
+           or if it explicitly says discount/baggage/fee, etc.
         """
         parsed_flights = []
 
-        # Example naive regex for something like "AED 1234" or "AED1,234"
-        # Adjust if you see different currency or formats in the aggregator text
-        price_regex = re.compile(r"(AED|USD|\$)\s?(\d+(,\d+)*(\.\d+)?)", re.IGNORECASE)
+        # Regex for "USD" or literal "$"
+        price_regex = re.compile(r"(?:USD|\$)\s?(\d+(,\d+)*(\.\d+)?)", re.IGNORECASE)
+
+        # We'll skip if snippet mentions these words (i.e. it's probably a fee)
+        skip_keywords = ["discount", "service fee", "baggage", "seat fee"]
+        # We'll keep if snippet mentions these words (i.e. real flight)
+        # You can do keep OR skip logic. We'll do both: skip if "discount" etc., keep if "flight"/"fare".
+        must_have_keywords = ["flight", "fare"]
 
         for day_entry in aggregator_data:
             date = day_entry["date"]
-            results = day_entry["results"]  # a list of aggregator items with "title", "url", "content", etc.
+            results = day_entry["results"]
 
-            for item in results:
+            logging.debug("[DEBUG parse_aggregator_data] Processing day_entry for date=%s, items=%d", date, len(results))
+
+            for item_idx, item in enumerate(results):
                 content = item.get("content", "")
                 link = item.get("url", "No link provided")
 
-                # Attempt to find a numeric price in the aggregator text
+                logging.debug("[DEBUG parse_aggregator_data] date=%s, item_idx=%d, link=%s\ncontent=%r",
+                              date, item_idx, link, content[:500])  # show the first 500 chars
+
                 match_price = price_regex.search(content)
                 if match_price:
-                    # Extract the raw numeric substring
-                    raw_price_str = match_price.group(2).replace(",", "")
+                    entire_match = match_price.group(0)  # e.g. "$8", "USD 1139"
+                    raw_price_str = match_price.group(1).replace(",", "")
                     try:
                         numeric_price = float(raw_price_str)
                     except ValueError:
                         numeric_price = None
+
+                    # Distinguish "USD" vs "$"
+                    if "USD" in entire_match.upper():
+                        currency_symbol = "USD"
+                    else:
+                        currency_symbol = "$"
+
+                    # Let's extract a snippet around the matched text to see context
+                    start_i = max(0, match_price.start() - 80)
+                    end_i = min(len(content), match_price.end() + 80)
+                    snippet = content[start_i:end_i].lower()
+
+                    # Check skip keywords
+                    if any(kw in snippet for kw in skip_keywords):
+                        logging.debug("Skipping match because snippet includes skip_keyword. snippet=%r", snippet)
+                        numeric_price = None
+                        currency_symbol = None
+                    else:
+                        # If you want to *require* mention of "flight" or "fare," do:
+                        if not any(kw in snippet for kw in must_have_keywords):
+                            logging.debug("Skipping match because snippet doesn't mention flight/fare. snippet=%r", snippet)
+                            numeric_price = None
+                            currency_symbol = None
+
+                    # Print debug if it survived
+                    if numeric_price is not None:
+                        logging.debug(
+                            "[DEBUG parse_aggregator_data] Matched price substring=%r => %r %s, link=%s",
+                            entire_match, numeric_price, currency_symbol, link
+                        )
                 else:
                     numeric_price = None
+                    currency_symbol = None
 
-                # Some placeholder logic for airline, times, etc.
-                airline = "Unknown"
-                departure_airport = "Unknown"
-                arrival_airport   = "Unknown"
-                departure_time    = None
-                arrival_time      = None
-
-                # Build a flight dict, including the link
                 flight_info = {
                     "date": date,
-                    "airline": airline,
-                    "departure_airport": departure_airport,
-                    "arrival_airport": arrival_airport,
-                    "departure_time": departure_time,
-                    "arrival_time": arrival_time,
+                    "airline": "Unknown",
+                    "departure_airport": "Unknown",
+                    "arrival_airport": "Unknown",
+                    "departure_time": None,
+                    "arrival_time": None,
                     "price": numeric_price,
+                    "currency": currency_symbol,
                     "link": link
                 }
                 parsed_flights.append(flight_info)
@@ -111,38 +146,24 @@ class TicketSearchTwoStep:
 
 
 if __name__ == "__main__":
-    # Instantiate the two-step tool
     two_step = TicketSearchTwoStep()
 
-    # Define parameters
-    origin = "Abu Dhabi"
-    destination = "Tokyo"
+    origin = "Chile"
+    destination = "Brazil"
     start_date = "2025-03-01"
     end_date   = "2025-03-02"
 
-    # ----------------------------------------
-    # STEP 1: Fetch aggregator data from Tavily
-    # ----------------------------------------
     aggregator_data = two_step.fetch_aggregator_data(origin, destination, start_date, end_date)
-
-    # ----------------------------------------
-    # STEP 2: Parse aggregator data
-    # ----------------------------------------
     parsed_flights = two_step.parse_aggregator_data(aggregator_data)
 
-    # Filter those with a valid price
     flights_with_price = [f for f in parsed_flights if f["price"] is not None]
 
     if not flights_with_price:
         print("No priced flights found from aggregator data.")
     else:
-        # Possibly find the cheapest
         cheapest = min(flights_with_price, key=lambda f: f["price"])
         print(f"Found {len(flights_with_price)} flights with a price.")
-        print(f"Cheapest price is {cheapest['price']} - Link: {cheapest['link']}\n")
+        print(f"Cheapest price is {cheapest['price']} {cheapest['currency']} - Link: {cheapest['link']}\n")
 
-        # Print them all
         for i, flight in enumerate(flights_with_price, start=1):
-            print(f"Flight {i}: Date={flight['date']}, Price={flight['price']}, Link={flight['link']}")
-            # If you want more detail:
-            # print(f"  Airline: {flight['airline']}, Dep: {flight['departure_airport']}, Arr: {flight['arrival_airport']}")
+            print(f"Flight {i}: Date={flight['date']}, Price={flight['price']} {flight['currency']}, Link={flight['link']}")
