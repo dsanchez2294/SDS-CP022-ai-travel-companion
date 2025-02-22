@@ -20,17 +20,19 @@ def grab_actions(response):
     return tool, details
 
 class TravelPlanner():
-    def __init__(self, openai_api_key, tavily_api_key):
+    def __init__(self, openai_api_key, tavily_api_key, origin, destination, start_date, end_date):
 
         self.openai_api_key = openai_api_key
         self.tavily_api_key = tavily_api_key
         self.planner = PlannerAgent(openai_api_key, tavily_api_key)
         self.summarizer = SummarizerAgent(openai_api_key, tavily_api_key)
-        self.prompt_template = (
+        self.prompt_template = ("""
             "I want you to build an itinerary for me for a trip from {origin} to {destination} starting "
             "from {start_month} {start_day} to {end_month} {end_day}."
+            """
         )
-
+        print("TravelPlanner initialized with Origin, Destination as : ",origin, destination)
+        print("TravelPlanner initialized with Start Date, End Date as : ",start_date, end_date)   
     def plan_itinerary(self, origin, destination, start_date, end_date, max_turns=6):
         # Convert dates to month name and day number
         start_month = start_date.strftime("%B")

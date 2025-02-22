@@ -78,7 +78,7 @@ def main():
                 try:
                     # st.write("passing in OAIK -", st.session_state["OPENAI_API_KEY"])
                     # st.write("passing in TAVK -",st.session_state["TAVILY_API_KEY"])    
-                    planner = TravelPlanner(st.session_state["OPENAI_API_KEY"], st.session_state["TAVILY_API_KEY"])
+                    planner = TravelPlanner(st.session_state["OPENAI_API_KEY"], st.session_state["TAVILY_API_KEY"], origin, destination, start_date, end_date)  
                     itinerary = planner.plan_itinerary(origin, destination, start_date, end_date)
                     st.markdown("### Generated Itinerary")
                     st.markdown(itinerary)
