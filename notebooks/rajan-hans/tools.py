@@ -36,7 +36,8 @@ class SearchWeb():
         response_list = [resp["content"] for resp in response["results"]]
         responses = " ".join(response_list)
         return responses
-    
+
+#below tools are defined but not used in the code    
 class SearchWiki:
     
     DOMAINS = [

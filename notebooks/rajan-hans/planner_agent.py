@@ -42,6 +42,7 @@ class PlannerAgent():
         - Top 3 Cities/Attractions in the destination (for example, "web_search: Top cities to visit in Switzerland.")
         - Flight ticket detailsfrom Los Angeles to Switzerland from ")
         - Hotel deals (e.g., "web_search: Best hotel deals in [city in destination] from [start date to end date]")
+        
        
 
     Example Session:

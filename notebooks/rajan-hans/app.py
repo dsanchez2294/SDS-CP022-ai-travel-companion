@@ -64,8 +64,8 @@ def main():
     destination = st.text_input("Destination", value="Switzerland")
     
     # Calendar controls for travel dates.
-    start_date = st.date_input("Travel Start Date", value=date.today() + timedelta(days=10))
-    end_date = st.date_input("Travel End Date", value=date.today() + timedelta(days=24))
+    start_date = st.date_input("Travel Start Date", value=date.today() + timedelta(days=20))
+    end_date = st.date_input("Travel End Date", value=date.today() + timedelta(days=34))
 
     if st.button("Generate Itinerary"):
         # Validate required fields and date logic.
@@ -79,7 +79,7 @@ def main():
                     # st.write("passing in OAIK -", st.session_state["OPENAI_API_KEY"])
                     # st.write("passing in TAVK -",st.session_state["TAVILY_API_KEY"])    
                     planner = TravelPlanner(st.session_state["OPENAI_API_KEY"], st.session_state["TAVILY_API_KEY"], origin, destination, start_date, end_date)  
-                    itinerary = planner.plan_itinerary(origin, destination, start_date, end_date)
+                    itinerary = planner.plan_itinerary(origin, destination, start_date, end_date, 6)
                     st.markdown("### Generated Itinerary")
                     st.markdown(itinerary)
                 except Exception as e:
