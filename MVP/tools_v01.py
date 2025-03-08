@@ -8,7 +8,7 @@ import re
 from dotenv import load_dotenv
 from tavily import TavilyClient
 
-load_dotenv("cred.env")
+load_dotenv("cred2.env")
 
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 if not TAVILY_API_KEY:

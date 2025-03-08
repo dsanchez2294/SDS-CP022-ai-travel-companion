@@ -2,7 +2,7 @@ import os
 import logging
 from openai import OpenAI
 from dotenv import load_dotenv
-load_dotenv("cred.env")
+load_dotenv("cred2.env")
 import json
 
 logging.basicConfig(

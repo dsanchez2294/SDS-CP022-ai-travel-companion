@@ -7,9 +7,11 @@
 import os
 import logging
 from openai import OpenAI
-from dotenv import load_dotenv
-load_dotenv("cred.env")
-
+from dotenv import load_dotenv, find_dotenv
+# Locate and load the cred2.env file
+dotenv_path = find_dotenv("cred2.env", raise_error_if_not_found=True)
+load_dotenv(dotenv_path)
+logging.info(f"Loaded environment variables from: {dotenv_path}")
 
 
 logging.basicConfig(
