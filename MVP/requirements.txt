@@ -1,0 +1,24 @@
+# Contains all libraries that are needed for this project
+
+# search api
+tavily-python
+load_dotenv
+
+# web scrapping libraries
+selenium
+requests
+
+# plotting libraries
+graphviz
+pygraphviz
+
+# LLM apis
+openai
+
+# to load env files
+python-dotenv
+
+# langchain libraries
+langchain
+langchain_community
+wikipedia
